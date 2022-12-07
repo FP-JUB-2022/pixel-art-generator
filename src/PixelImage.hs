@@ -1,8 +1,8 @@
-module PixelImage where
+module PixelImage (test) where
 
 import Codec.Picture as Pic
-import Codec.Picture.Types
 
+test :: FilePath -> IO ()
 test filePath = do
   img <- Pic.readImage filePath
   case img of
