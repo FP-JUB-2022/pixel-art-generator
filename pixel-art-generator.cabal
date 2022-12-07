@@ -42,6 +42,8 @@ executable pixel-art-generator
                      , Spock >= 0.14
                      , mtl
                      , text
+                     , lucid
+                     , Spock-lucid
                      , pixel-art-generator
   ghc-options:         -Wall
                        -Wcompat
