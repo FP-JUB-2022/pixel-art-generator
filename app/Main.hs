@@ -3,6 +3,7 @@ module Main (main) where
 
 import Web.Spock
 import Web.Spock.Config
+import Network.Wai.Middleware.Static
 
 import Web.Spock.Lucid (lucid)
 import Lucid
@@ -25,10 +26,23 @@ main :: IO ()
 main =
     do ref <- newIORef 0
        spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ref)
-       runSpock 8081 (spock spockCfg app)
+       runSpock 8086 (spock spockCfg app)
 
-app :: SpockM () MySession MyAppState ()
-app = get root $ lucid $ do
-    h1_ "Test."
-    p_ "Test <p>."
-    input_ [type_ "file"]
+app :: SpockCtxM () () MySession MyAppState ()
+app = do
+    middleware (staticPolicy (addBase "static"))
+    get root $ lucid $ do
+        head_ $ do
+            link_ [rel_ "stylesheet", href_ "/css/style.css"]
+        body_ $ do
+            h1_ "Test."
+            p_ "Test <p>."
+            form_ [method_ "post"] $ do
+                label_ $ do
+                    "Select image: "
+                    input_ [type_ "file", name_ "image"]
+                input_ [type_ "submit"]
+    post root $ do
+        --image <- param "image"
+        redirect "/"
+        
