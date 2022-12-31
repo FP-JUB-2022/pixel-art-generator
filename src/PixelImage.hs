@@ -5,4 +5,4 @@ module PixelImage (
 import Transformation (transformFile)
 
 test :: IO ()
-test = transformFile (50, 50) "./test-images/mario.png" "./test-images/out.png"
+test = transformFile (100, 100) "./test-images/mario.png" "./test-images/out.png"

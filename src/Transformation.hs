@@ -32,16 +32,21 @@ getKernelIndices img sx sy (sizeX, sizeY) =
     let imgWidth = imageWidth img in
         [(x, y) | x <- getLineIndices imgWidth sizeX sx, y <- getLineIndices imgHeight sizeY sy]
 
-computeResultingPixel :: Image PixelRGBA8 -> (Int, Int) -> Int -> Int -> PixelRGBA8
-computeResultingPixel img (sizeX, sizeY) x y  | x `mod` sizeX /= 0 || y `mod` sizeY /= 0
-    = computeResultingPixel img (sizeX, sizeY) (x - (x `mod` sizeX)) (y - (y `mod` sizeY))
-computeResultingPixel img size sx sy
+transformKeypointPixel :: Image PixelRGBA8 -> (Int, Int) -> Int -> Int -> PixelRGBA8
+transformKeypointPixel img (sizeX, sizeY) x y  | x `mod` sizeX /= 0 || y `mod` sizeY /= 0
+    = pixelAt img x y
+transformKeypointPixel img size sx sy
     = mergePixels $ map (uncurry (pixelAt img)) $ getKernelIndices img sx sy size
 
 
+transformPixel :: Image PixelRGBA8 -> (Int, Int) -> Int -> Int -> PixelRGBA8
+transformPixel imgWithKeypoints (sizeX, sizeY) x y
+    = pixelAt imgWithKeypoints (x - (x `mod` sizeX)) (y - (y `mod` sizeY))
+
 transformImage :: (Int, Int) -> Image PixelRGBA8 -> Image PixelRGBA8
 transformImage kernelSize srcImg = 
-    generateImage (computeResultingPixel srcImg kernelSize) (imageWidth srcImg) (imageHeight srcImg)
+    let keypointsImg = generateImage (transformKeypointPixel srcImg kernelSize) (imageWidth srcImg) (imageHeight srcImg) in
+        generateImage (transformPixel keypointsImg kernelSize) (imageWidth srcImg) (imageHeight srcImg)
 
 
 transformFile :: (Int, Int) -> FilePath -> FilePath -> IO()
