@@ -13,7 +13,9 @@ import Data.Monoid
 import Data.IORef
 import qualified Data.Text as T
 
-import PixelImage as Pixel
+import qualified PixelImage as Pixel
+import Transformation
+
 
 data MySession = EmptySession
 data MyAppState = DummyAppState (IORef Int)
@@ -23,10 +25,11 @@ data MyAppState = DummyAppState (IORef Int)
 --     Pixel.test "./test-images/logs.jpg"
 
 main :: IO ()
-main =
-    do ref <- newIORef 0
-       spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ref)
-       runSpock 8086 (spock spockCfg app)
+main = do 
+    foo <- Pixel.test
+    ref <- newIORef 0
+    spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ref)
+    runSpock 8086 (spock spockCfg app)
 
 app :: SpockCtxM () () MySession MyAppState ()
 app = do

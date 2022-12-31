@@ -1,10 +1,8 @@
-module PixelImage (test) where
+module PixelImage (
+  test,
+  ) where
 
-import Codec.Picture as Pic
+import Transformation (transformFile)
 
-test :: FilePath -> IO ()
-test filePath = do
-  img <- Pic.readImage filePath
-  case img of
-    Left _       -> return ()
-    Right image' -> Pic.savePngImage "./test-images/aboba.png" image'
+test :: IO ()
+test = transformFile (50, 50) "./test-images/mario.png" "./test-images/out.png"
